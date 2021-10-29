@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+  <link rel="stylesheet" href="main.css" />
+</head>
+
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Upload Your File Here</h1>
+    </div>
+    <div class="main-content">
+      <form class="search-form">
+        <div class="row">
+          <div class="col">
+            <div class="form-group">
+              <input placeholder="Enter title" type="text" id="title" class="form-control" value=""
+                style="width: 800px; margin-top: 22px;" />
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <div class="form-group">
+              <input name="description" placeholder="Enter description" type="text" id="description"
+                class="form-control" value="" style="width: 800px; margin-top: 25px;" />
+            </div>
+          </div>
+        </div>
+        <div class="upload-section">
+          <div tabindex="0" class="drop-zone" style="border: 2px dashed rgb(72, 191, 145)">
+            <input class="file" type="file" name="bill" autocomplete="off" tabindex="-1" />
+            <p>Drag and drop a file OR click here to select a file</p>
+
+
+            <button type="submit" class="btn btn btn-primary" data-bs-target="#exampleModal">Submit</button>
+      </form>
+
+    </div>
+
+  </div>
+  <div id="data">
+
+
+  </div>
+  <a href="#" id="button" class="button">Click Me</a>
+  <!-- Modal Section -->
+
+  <div class="bg-modal" >
+    <div class="modal-contents">
+
+      <div class="close">+</div>
+      <button class="print">Print</button>
+      <button class="send">Send</button>
+    </div>
+  </div>
+
+</body>
+<script>
+
+  const form = document.querySelector('form')
+  console.log(form)
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault()
+    const dataForm = form.querySelector('.upload-section')
+    console.log(dataForm)
+    const dataForm1 = dataForm.querySelector('.drop-zone')
+    console.log(dataForm1)
+    const dataFile = dataForm1.querySelector('input')
+
+    const formData = new FormData();
+    formData.append('bill', dataFile.files[0])
+    // console.log(dataFile.files)
+
+    const data_to = await fetch('/fileUpload', {
+      method: 'POST',
+      body: formData
+
+    })
+
+    const p = await data_to.json()
+    console.log(p)
+
+    const statusShow = document.querySelector('#data')
+    statusShow.innerHTML = `<p>
+      <br><br>
+      <h2>
+        MESSAGE : ${p.message}</h2>
+     file_path: ${p.uploadFileStatus.file_path}
+     <br><br>
+     file_id = ${p.uploadFileStatus._id}
+     </p>`
+
+    setTimeout(() => {
+      statusShow.style.display = 'none'
+    }, 2000);
+
+
+
+  })
+  document.getElementById('button').addEventListener("click", function () {
+    document.querySelector('.bg-modal').style.display = "flex";
+  });
+
+  document.querySelector('.close').addEventListener("click", function () {
+    document.querySelector('.bg-modal').style.display = "none";
+  });
+
+  const send = document.querySelector('.send').addEventListener('click',function(){
+    location.assign('http://localhost:3000/send-ebill.html')
+  })
+ 
+ const print = document.querySelector('.print').addEventListener('click', async (e)=>{
+   const data = await fetch('/upload',{
+
+    method:'GET'
+   } )
+
+   const dataget =  await data.json()
+   console.log(dataget)
+   location.assign(`${dataget.data}`)
+ })
+</script>
+
+
+</html>
